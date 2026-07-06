@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CyberLab: Intro to Linux & Terminal Adventures</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            mono: ['Courier New', 'Courier', 'monospace'],
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom Focus Outline for AAA Accessibility */
+    *:focus-visible {
+      outline: 4px solid #f59e0b !important;
+      outline-offset: 2px;
+    }
+    /* Dyslexia Friendly Font Helper */
+    .dyslexic-font {
+      font-family: 'OpenDyslexic', 'Comic Sans MS', sans-serif !important;
+      letter-spacing: 0.12em !important;
+      word-spacing: 0.25em !important;
+      line-height: 1.8 !important;
+    }
+    /* Card Flip animations */
+    .perspective-1000 {
+      perspective: 1000px;
+    }
+    .transform-style-3d {
+      transform-style: preserve-3d;
+    }
+    .backface-hidden {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .rotate-y-180 {
+      transform: rotateY(180deg);
+    }
+    /* Smooth Transitions */
+    .transition-all-custom {
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    /* Scrollbars */
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(30, 41, 59, 0.5);
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.3);
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: rgba(148, 163, 184, 0.6);
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans transition-all-custom min-h-screen flex flex-col antialiased dark:bg-slate-950 dark:text-slate-100">
+
+  <!-- ACCESSIBILITY SKIP LINK -->
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-amber-500 focus:text-slate-900 focus:font-bold focus:rounded-md">
+    Skip to Main Content
+  </a>
+
+  <!-- TOP HEADER & ACCESSIBILITY BAR -->
+  <header class="bg-slate-950 text-white shadow-md border-b-4 border-emerald-500" role="banner">
+    <div class="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8 flex flex-wrap items-center justify-between gap-4">
+      
+      <!-- Brand Identity -->
+      <div class="flex items-center space-x-3">
+        <div class="bg-emerald-500 text-slate-950 p-2.5 rounded-lg font-mono font-black text-xl tracking-wider select-none shadow-inner" aria-hidden="true">
+          &gt;_
+        </div>
+        <div>
+          <h1 class="text-xl font-bold tracking-tight text-white sm:text-2xl">
+            CyberLab: Linux Command Line
+          </h1>
+          <p class="text-xs text-emerald-400 font-mono">CC Cybersecurity Dept. | Intro to Shell Terminals</p>
+        </div>
+      </div>
+
+      <!-- Live Accessibility Panel -->
+      <div class="flex flex-wrap items-center gap-2 bg-slate-900 p-2 rounded-lg border border-slate-850" role="region" aria-label="Accessibility Controls">
+        <span class="text-xs font-mono text-slate-400 px-1 hidden md:inline">Accessibility Controls:</span>
+        
+        <!-- Font Size Decrement -->
+        <button onclick="adjustTextSize('down')" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-sm font-bold rounded transition focus:ring-2 focus:ring-amber-500" aria-label="Decrease text size">
+          A-
+        </button>
+        <!-- Font Size Increment -->
+        <button onclick="adjustTextSize('up')" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-sm font-bold rounded transition focus:ring-2 focus:ring-amber-500" aria-label="Increase text size">
+          A+
+        </button>
+        
+        <!-- High Contrast Mode -->
+        <button onclick="toggleHighContrast()" id="btn-contrast" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-xs font-medium rounded flex items-center gap-1 transition focus:ring-2 focus:ring-amber-500" aria-label="Toggle Dark Mode/High Contrast">
+          <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"/></svg>
+          Theme Contrast
+        </button>
+
+        <!-- Dyslexia Font Toggle -->
+        <button onclick="toggleDyslexiaFont()" id="btn-dyslexia" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-xs font-medium rounded flex items-center gap-1 transition focus:ring-2 focus:ring-amber-500" aria-label="Toggle Dyslexic-Friendly Font">
+          <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+          Readable Font
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- MAIN AREA -->
+  <main id="main-content" class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-4 gap-6" role="main">
+    
+    <!-- LEFT NAVIGATION BAR: LESSON SEGMENTS -->
+    <nav class="lg:col-span-1 space-y-4 flex flex-col" aria-label="Lesson Progress & Navigation">
+      <div class="bg-slate-900 text-slate-100 rounded-xl p-4 border-l-4 border-indigo-500 shadow-md">
+        <h2 class="text-xs font-mono uppercase tracking-wider text-indigo-400 font-bold mb-1">Course Progress</h2>
+        <h3 class="text-base font-bold mb-3">Unit 1: Command Line Basics</h3>
+        <div class="space-y-2 text-sm">
+          <div class="flex justify-between items-center bg-slate-800 p-2 rounded">
+            <span>Core Objectives Met:</span>
+            <span id="tracker-completed" class="font-bold text-emerald-400 font-mono" aria-live="polite">0/4</span>
+          </div>
+          <!-- Progress Bar -->
+          <div class="w-full bg-slate-750 rounded-full h-2">
+            <div id="progress-bar-fill" class="bg-emerald-400 h-2 rounded-full transition-all duration-500" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" role="progressbar"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <div class="bg-white dark:bg-slate-900 rounded-xl p-3 border border-slate-200 dark:border-slate-850 shadow-sm flex flex-row lg:flex-col overflow-x-auto lg:overflow-visible gap-1 custom-scrollbar">
+        
+        <button onclick="switchTab('tab-tutorial')" id="btn-tab-tutorial" class="tab-btn w-full text-left px-4 py-3 rounded-lg font-semibold flex items-center gap-3 transition-all text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 dark:text-emerald-400 border-l-4 border-emerald-500" aria-selected="true" role="tab" aria-controls="tab-tutorial">
+          <span class="text-lg">📖</span>
+          <span class="whitespace-nowrap lg:whitespace-normal">1. Lesson Brief</span>
+        </button>
+
+        <button onclick="switchTab('tab-cards')" id="btn-tab-cards" class="tab-btn w-full text-left px-4 py-3 rounded-lg font-semibold flex items-center gap-3 transition-all text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800" aria-selected="false" role="tab" aria-controls="tab-cards">
+          <span class="text-lg">🃏</span>
+          <span class="whitespace-nowrap lg:whitespace-normal">2. Command Flashcards</span>
+        </button>
+
+        <button onclick="switchTab('tab-sandbox')" id="btn-tab-sandbox" class="tab-btn w-full text-left px-4 py-3 rounded-lg font-semibold flex items-center gap-3 transition-all text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800" aria-selected="false" role="tab" aria-controls="tab-sandbox">
+          <span class="text-lg">💻</span>
+          <span class="whitespace-nowrap lg:whitespace-normal">3. Simulated Terminal</span>
+        </button>
+
+        <button onclick="switchTab('tab-terminus')" id="btn-tab-terminus" class="tab-btn w-full text-left px-4 py-3 rounded-lg font-semibold flex items-center gap-3 transition-all text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800" aria-selected="false" role="tab" aria-controls="tab-terminus">
+          <span class="text-lg">🎮</span>
+          <span class="whitespace-nowrap lg:whitespace-normal">4. Terminus Adventure</span>
+        </button>
+
+        <button onclick="switchTab('tab-quiz')" id="btn-tab-quiz" class="tab-btn w-full text-left px-4 py-3 rounded-lg font-semibold flex items-center gap-3 transition-all text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800" aria-selected="false" role="tab" aria-controls="tab-quiz">
+          <span class="text-lg">🛡️</span>
+          <span class="whitespace-nowrap lg:whitespace-normal">5. Security Quiz</span>
+        </button>
+
+      </div>
+
+      <!-- Quick Accessibility Cheat Sheet Button -->
+      <button onclick="toggleCheatSheetModal(true)" class="w-full mt-2 bg-slate-900 hover:bg-slate-850 text-white font-mono text-xs py-3 px-4 rounded-xl border border-slate-800 flex items-center justify-between transition group focus:ring-2 focus:ring-amber-500">
+        <span>📋 Terminal Cheat Sheet</span>
+        <span class="bg-slate-850 px-1.5 py-0.5 rounded group-hover:bg-emerald-600 text-[10px] transition text-slate-300">Ctrl + /</span>
+      </button>
+    </nav>
+
+    <!-- RIGHT WORKSPACE: ACTIVE MODULE PANEL -->
+    <div class="lg:col-span-3 space-y-6">
+
+      <!-- ============================================== -->
+      <!-- TAB 1: TUTORIAL & LESSON BRIEF -->
+      <!-- ============================================== -->
+      <section id="tab-tutorial" class="tab-content block space-y-6" role="tabpanel" aria-labelledby="btn-tab-tutorial">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 md:p-8 border border-slate-200 dark:border-slate-800 shadow-md">
+          
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+            <div>
+              <span class="bg-indigo-100 dark:bg-indigo-950/60 text-indigo-800 dark:text-indigo-300 font-mono text-xs font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
+                Module 1: Command Line Interface (CLI) Basics
+              </span>
+              <h2 class="text-2xl md:text-3xl font-bold mt-2 text-slate-900 dark:text-white">
+                Why Master the Terminal?
+              </h2>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="h-3.5 w-3.5 rounded-full bg-emerald-500 animate-pulse" aria-hidden="true"></span>
+              <span class="text-xs font-mono font-medium text-slate-500 dark:text-slate-400">Class Briefing Active</span>
+            </div>
+          </div>
+
+          <!-- Professor Welcoming Message Card -->
+          <div class="bg-emerald-50 dark:bg-slate-800/50 border-l-4 border-emerald-500 rounded-r-xl p-5 mb-6">
+            <div class="flex space-x-3">
+              <span class="text-3xl" aria-hidden="true">👨‍🏫</span>
+              <div>
+                <h4 class="font-bold text-slate-900 dark:text-white text-sm">Professor's Cyber Briefing:</h4>
+                <p class="text-sm text-slate-700 dark:text-slate-300 mt-1 leading-relaxed">
+                  "Welcome, incoming security cadets! In the cybersecurity operations field, graphical interfaces are too slow and limited. When assessing malware, scanning network packets, or examining server configurations, the command-line interface is your core super-weapon. Let's practice navigation!"
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Conceptual Guides -->
+          <h3 class="text-lg font-bold text-slate-950 dark:text-white mb-4 flex items-center gap-2">
+            <span>⚙️</span> The Core Commands of Filesystem Navigation
+          </h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            <!-- pwd command card -->
+            <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-850 hover:border-indigo-400 transition">
+              <div class="flex items-center gap-2 mb-2">
+                <code class="bg-slate-900 text-amber-400 font-mono text-xs px-2 py-1 rounded">pwd</code>
+                <span class="text-xs font-bold font-mono text-slate-500 uppercase">Print Working Directory</span>
+              </div>
+              <p class="text-sm text-slate-600 dark:text-slate-300">
+                Shows your current exact location inside the system's nested directories, stating the absolute directory path starting from root (`/`).
+              </p>
+            </div>
+
+            <!-- ls command card -->
+            <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-850 hover:border-indigo-400 transition">
+              <div class="flex items-center gap-2 mb-2">
+                <code class="bg-slate-900 text-amber-400 font-mono text-xs px-2 py-1 rounded">ls</code>
+                <span class="text-xs font-bold font-mono text-slate-500 uppercase">List Directory Contents</span>
+              </div>
+              <p class="text-sm text-slate-600 dark:text-slate-300">
+                Reveals all file and sub-directory names residing inside your current directory. Essential for identifying configuration logs or hidden keys.
+              </p>
+            </div>
+
+            <!-- cd command card -->
+            <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-850 hover:border-indigo-400 transition">
+              <div class="flex items-center gap-2 mb-2">
+                <code class="bg-slate-900 text-amber-400 font-mono text-xs px-2 py-1 rounded">cd [target]</code>
+                <span class="text-xs font-bold font-mono text-slate-500 uppercase">Change Directory</span>
+              </div>
+              <p class="text-sm text-slate-600 dark:text-slate-300">
+                Moves you to another folder path. Type <code class="bg-slate-200 dark:bg-slate-750 px-1 rounded">cd ..</code> to step back up one folder layer, or <code class="bg-slate-200 dark:bg-slate-750 px-1 rounded">cd</code> to return straight home.
+              </p>
+            </div>
+
+            <!-- cat command card -->
+            <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-850 hover:border-indigo-400 transition">
+              <div class="flex items-center gap-2 mb-2">
+                <code class="bg-slate-900 text-amber-400 font-mono text-xs px-2 py-1 rounded">cat [file]</code>
+                <span class="text-xs font-bold font-mono text-slate-500 uppercase">Concatenate & Display</span>
+              </div>
+              <p class="text-sm text-slate-600 dark:text-slate-300">
+                Renders and outputs the raw text stored within a file directly into the terminal window—used to inspect critical scripts and credential files.
+              </p>
+            </div>
+
+          </div>
+
+          <!-- Activity Goals Check -->
+          <div class="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800">
+            <h4 class="text-base font-bold text-slate-900 dark:text-white mb-2">Suggested Learning Pipeline:</h4>
+            <ul class="space-y-3 text-sm">
+              <li class="flex items-start gap-3">
+                <span class="text-emerald-500 font-bold" aria-hidden="true">✔</span>
+                <span><strong>Step 1:</strong> Read the theoretical baseline. Done? Let's move on.</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="text-indigo-500 font-bold" aria-hidden="true">➔</span>
+                <span><strong>Step 2:</strong> Open the <strong>Command Flashcards</strong> to quickly lock commands and behaviors into your muscle memory.</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="text-amber-500 font-bold" aria-hidden="true">➔</span>
+                <span><strong>Step 3:</strong> Access the <strong>Simulated Terminal</strong> to locate the intruder's hidden authentication flag inside the virtual mainframe!</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="text-teal-500 font-bold" aria-hidden="true">➔</span>
+                <span><strong>Step 4:</strong> Play the embedded <strong>MIT Terminus</strong> text adventure—using real terminal commands to complete a fantasy quest.</span>
+              </li>
+            </ul>
+
+            <div class="mt-6">
+              <button onclick="switchTab('tab-cards')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold transition flex items-center gap-2 shadow-lg focus:ring-2 focus:ring-amber-500">
+                Start Terminal Flashcards
+                <span aria-hidden="true">➔</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- TAB 2: INTERACTIVE CONCEPT FLASHCARDS -->
+      <!-- ============================================== -->
+      <section id="tab-cards" class="tab-content hidden space-y-6" role="tabpanel" aria-labelledby="btn-tab-cards">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 md:p-8 border border-slate-200 dark:border-slate-800 shadow-md">
+          
+          <div class="mb-6">
+            <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Terminal Command Memory Deck</h2>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+              Select or cycle through cards. Select a card to flip it and reveal the command's internal cybersecurity significance!
+            </p>
+          </div>
+
+          <!-- Flashcard Deck Container -->
+          <div class="flex flex-col items-center justify-center space-y-6">
+            
+            <div id="flashcard-container" class="w-full max-w-md h-72 perspective-1000 cursor-pointer focus:outline-none" onclick="toggleFlashcardFlip()" onkeydown="handleFlashcardKey(event)" tabindex="0" aria-label="Interactive Flashcard. Press Enter or Space to flip, use Left and Right arrows to switch cards." role="button" aria-live="polite">
+              <div id="flashcard-inner" class="relative w-full h-full text-center transition-transform duration-500 transform-style-3d shadow-xl rounded-2xl border-2 border-slate-300 dark:border-slate-700">
+                
+                <!-- Front Side -->
+                <div id="card-front" class="absolute inset-0 bg-slate-900 text-white rounded-2xl p-6 flex flex-col justify-between backface-hidden">
+                  <div class="flex justify-between items-center text-xs font-mono text-emerald-400">
+                    <span>Linux Core Commands</span>
+                    <span id="card-index-front">1 of 5</span>
+                  </div>
+                  <div class="my-auto space-y-2">
+                    <h3 id="card-cmd" class="text-4xl font-mono font-bold tracking-wider text-amber-400">pwd</h3>
+                    <p id="card-desc" class="text-sm text-slate-300 font-medium">Print Working Directory</p>
+                  </div>
+                  <div class="text-[10px] text-slate-400 uppercase tracking-widest">
+                    Select Card or Press Enter to Flip
+                  </div>
+                </div>
+
+                <!-- Back Side -->
+                <div id="card-back" class="absolute inset-0 bg-indigo-950 text-white rounded-2xl p-6 flex flex-col justify-between rotate-y-180 backface-hidden">
+                  <div class="flex justify-between items-center text-xs font-mono text-emerald-300">
+                    <span>Cybersecurity Use Case</span>
+                    <span id="card-index-back">1 of 5</span>
+                  </div>
+                  <div class="my-auto text-left space-y-3">
+                    <h4 class="text-md font-bold text-amber-400 font-mono">Incident Investigation Workflow:</h4>
+                    <p id="card-security-use" class="text-sm text-slate-200 leading-relaxed">
+                      "When checking suspicious access log dumps, executing this command verifies you're analyzing files within the correct target volume rather than system folders."
+                    </p>
+                  </div>
+                  <div class="text-[10px] text-indigo-300 uppercase tracking-widest">
+                    Select Card to Flip Back
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="flex items-center gap-4">
+              <button onclick="prevFlashcard()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-xl text-sm transition focus:ring-2 focus:ring-amber-500" aria-label="Previous Flashcard">
+                ◀ Prev
+              </button>
+              <button onclick="toggleFlashcardFlip()" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-sm transition focus:ring-2 focus:ring-amber-500">
+                Flip Card
+              </button>
+              <button onclick="nextFlashcard()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-xl text-sm transition focus:ring-2 focus:ring-amber-500" aria-label="Next Flashcard">
+                Next ▶
+              </button>
+            </div>
+
+            <!-- Validation Button -->
+            <button onclick="markCardsFinished()" class="mt-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-6 rounded-lg transition-all text-xs">
+              Mark Flashcards as Studied ✔
+            </button>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- TAB 3: SIMULATED LINUX TERMINAL -->
+      <!-- ============================================== -->
+      <section id="tab-sandbox" class="tab-content hidden space-y-6" role="tabpanel" aria-labelledby="btn-tab-sandbox">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 md:p-8 border border-slate-200 dark:border-slate-800 shadow-md">
+          
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+            <div>
+              <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Simulated Shell Terminal</h2>
+              <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                Your Target: Browse folders, explore inside the <code class="text-xs bg-slate-100 dark:bg-slate-850 px-1 rounded text-red-500">classified</code> directory, read <code class="text-xs bg-slate-100 dark:bg-slate-850 px-1 rounded text-red-500">secret_key.txt</code>, and submit the flag code below!
+              </p>
+            </div>
+            <!-- Reset Sandbox -->
+            <button onclick="resetSandboxTerminal()" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-750 text-xs font-mono rounded border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 transition">
+              🔄 Reset Sandbox FS
+            </button>
+          </div>
+
+          <!-- The Terminal Emulation Box -->
+          <div class="bg-slate-950 text-slate-100 rounded-xl overflow-hidden border-2 border-slate-800 shadow-2xl focus-within:border-amber-500 transition-all duration-150">
+            <!-- Header Bar -->
+            <div class="bg-slate-900 px-4 py-2.5 border-b border-slate-850 flex items-center justify-between">
+              <div class="flex items-center space-x-2">
+                <span class="w-3 h-3 rounded-full bg-red-500 inline-block" aria-hidden="true"></span>
+                <span class="w-3 h-3 rounded-full bg-yellow-500 inline-block" aria-hidden="true"></span>
+                <span class="w-3 h-3 rounded-full bg-green-500 inline-block" aria-hidden="true"></span>
+                <span class="text-xs font-mono font-bold text-slate-400 pl-2">cadet@cyberlab-main-terminal: ~</span>
+              </div>
+              <span class="text-[10px] bg-slate-800 text-emerald-400 font-mono px-2 py-0.5 rounded">ONLINE</span>
+            </div>
+
+            <!-- Terminal History Log -->
+            <div id="terminal-screen" class="p-4 h-80 overflow-y-auto font-mono text-sm leading-relaxed custom-scrollbar bg-slate-950 text-emerald-400" role="log" aria-live="polite">
+              <div class="text-slate-400 mb-2">Welcome to CyberLab Terminal Simulator v1.5.0!</div>
+              <div class="text-slate-400 mb-2">Instructions: Use commands like <span class="text-amber-300 font-bold">ls</span>, <span class="text-amber-300 font-bold">pwd</span>, <span class="text-amber-300 font-bold">cd [dir]</span>, and <span class="text-amber-300 font-bold">cat [file]</span> to browse the machine!</div>
+              <div class="text-slate-500 mb-4">---------------------------------------------------------</div>
+            </div>
+
+            <!-- Input Line -->
+            <div class="bg-slate-900 p-3 flex items-center border-t border-slate-850">
+              <label id="lbl-prompt" for="terminal-input" class="text-emerald-400 font-mono text-sm font-bold mr-2 select-none">
+                cadet@cyber-node:<span id="terminal-prompt-path">~</span>$
+              </label>
+              <input type="text" id="terminal-input" class="flex-1 bg-transparent text-white font-mono text-sm outline-none border-none focus:ring-0 w-full" placeholder="Type command here (e.g. ls) and hit Enter..." aria-label="Terminal Prompt Input" autocomplete="off" spellcheck="false">
+            </div>
+
+          </div>
+
+          <!-- CLI Helper Actions -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 pt-4 border-t border-slate-200 dark:border-slate-800">
+            <div>
+              <h4 class="font-bold text-slate-900 dark:text-white text-sm mb-2">💡 Need an Instant Spell? Click to run:</h4>
+              <div class="flex flex-wrap gap-2">
+                <button onclick="insertAndRunCommand('ls')" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-2.5 py-1 text-xs rounded font-mono border border-slate-300 dark:border-slate-700">ls (list items)</button>
+                <button onclick="insertAndRunCommand('pwd')" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-2.5 py-1 text-xs rounded font-mono border border-slate-300 dark:border-slate-700">pwd (find position)</button>
+                <button onclick="insertAndRunCommand('cd classified')" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-2.5 py-1 text-xs rounded font-mono border border-slate-300 dark:border-slate-700">cd classified</button>
+                <button onclick="insertAndRunCommand('cat classified/secret_key.txt')" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-2.5 py-1 text-xs rounded font-mono border border-slate-300 dark:border-slate-700">cat classified/secret_key.txt</button>
+              </div>
+            </div>
+
+            <!-- Validation Flag Console -->
+            <div class="p-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-200 dark:border-slate-700">
+              <h4 class="font-bold text-slate-900 dark:text-white text-sm mb-1">🔑 Verify Mainframe Key</h4>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">Found the FLAG code inside the secret file? Input it below to earn credits:</p>
+              
+              <div class="flex gap-2">
+                <input type="text" id="flag-submit-input" class="flex-1 px-3 py-1.5 text-sm rounded border border-slate-350 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-mono" placeholder="FLAG{...}" aria-label="Paste key found inside terminal text file">
+                <button onclick="submitSandboxFlag()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-1.5 rounded text-sm font-bold transition focus:ring-2 focus:ring-amber-500">
+                  Verify
+                </button>
+              </div>
+              <div id="flag-feedback" class="mt-2 text-xs font-bold font-mono"></div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- TAB 4: MIT TERMINUS GAME EMBED -->
+      <!-- ============================================== -->
+      <section id="tab-terminus" class="tab-content hidden space-y-6" role="tabpanel" aria-labelledby="btn-tab-terminus">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 md:p-8 border border-slate-200 dark:border-slate-800 shadow-md">
+          
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+            <div>
+              <span class="bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-400 font-mono text-xs font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
+                Interactive Text Adventure Game
+              </span>
+              <h2 class="text-2xl font-bold mt-2 text-slate-900 dark:text-white">MIT Terminus Shell</h2>
+              <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                Explore filesystem structures represented as medieval castle rooms, spells, and magic chests using this game hosted by MIT!
+              </p>
+            </div>
+            
+            <button onclick="reloadTerminusIframe()" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-mono rounded border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 transition">
+              🔄 Reset Frame Game
+            </button>
+          </div>
+
+          <!-- Spellbook Instructions -->
+          <div class="p-4 bg-amber-50 dark:bg-slate-800/40 border border-amber-200 dark:border-amber-900/60 rounded-xl mb-6 text-sm">
+            <h4 class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <span>🧙‍♂️</span> Terminus Spells (CLI Analogies)
+            </h4>
+            <p class="text-xs text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
+              When typing inside the game, match these exact keywords to navigate and discover mystical items:
+            </p>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-3 font-mono text-xs">
+              <div class="bg-white dark:bg-slate-900 p-2 rounded shadow-sm border border-slate-200 dark:border-slate-850">
+                <span class="font-bold text-indigo-500">ls</span>
+                <span class="block text-[10px] text-slate-400 mt-1">Check exits and chests in the room</span>
+              </div>
+              <div class="bg-white dark:bg-slate-900 p-2 rounded shadow-sm border border-slate-200 dark:border-slate-850">
+                <span class="font-bold text-indigo-500">cd [RoomName]</span>
+                <span class="block text-[10px] text-slate-400 mt-1">Move/Walk into that location</span>
+              </div>
+              <div class="bg-white dark:bg-slate-900 p-2 rounded shadow-sm border border-slate-200 dark:border-slate-850">
+                <span class="font-bold text-indigo-500">less [Item]</span>
+                <span class="block text-[10px] text-slate-400 mt-1">Read/Examine parchment letter text</span>
+              </div>
+              <div class="bg-white dark:bg-slate-900 p-2 rounded shadow-sm border border-slate-200 dark:border-slate-850">
+                <span class="font-bold text-indigo-500">cd ..</span>
+                <span class="block text-[10px] text-slate-400 mt-1">Go back to the previous room</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Web Embed Frame -->
+          <div class="relative bg-black rounded-2xl overflow-hidden border-2 border-slate-800 shadow-2xl">
+            <iframe id="terminus-iframe" 
+                    src="https://www.mprat.org/Terminus/" 
+                    class="w-full h-[540px] bg-slate-950 border-0" 
+                    title="MIT Terminus Command Line Adventure Game">
+            </iframe>
+          </div>
+
+          <!-- Game Task Validation -->
+          <div class="mt-6 p-4 bg-slate-50 dark:bg-slate-850 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="text-sm text-slate-600 dark:text-slate-300">
+              <h4 class="font-bold text-slate-900 dark:text-white">🚀 Practical Validation Challenge</h4>
+              <p class="text-xs">Which real UNIX command did you study that lets us look at text contents instantly?</p>
+            </div>
+            <div class="flex gap-2 w-full md:w-auto">
+              <input type="text" id="game-check-input" class="flex-1 md:flex-initial px-3 py-1.5 text-sm rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-mono" placeholder="Read file contents..." aria-label="Command query answer input">
+              <button onclick="checkGameChallenge()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-1.5 rounded text-sm font-bold transition focus:ring-2 focus:ring-amber-500">Submit</button>
+            </div>
+          </div>
+          <div id="game-feedback-msg" class="mt-2 text-xs font-bold font-mono"></div>
+
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- TAB 5: KNOWLEDGE CYBER QUIZ -->
+      <!-- ============================================== -->
+      <section id="tab-quiz" class="tab-content hidden space-y-6" role="tabpanel" aria-labelledby="btn-tab-quiz">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 md:p-8 border border-slate-200 dark:border-slate-800 shadow-md">
+          
+          <div class="border-b border-slate-200 dark:border-slate-800 pb-4 mb-6">
+            <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Security Validation Challenge</h2>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+              Complete these scenario-based assessments to earn your security badge.
+            </p>
+          </div>
+
+          <form id="quiz-form" class="space-y-6" onsubmit="evaluateQuiz(event)">
+            
+            <!-- Question 1 -->
+            <div class="space-y-2">
+              <h3 class="text-sm font-bold font-mono text-indigo-500 uppercase">Scenario Case 1:</h3>
+              <p class="text-base text-slate-900 dark:text-white font-semibold">
+                An anomalous process is active in an unidentified branch of the system. Which utility instantly maps your absolute directory path?
+              </p>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2" role="radiogroup" aria-label="Question 1 choices">
+                <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-850 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition">
+                  <input type="radio" name="q1" value="a" class="w-4 h-4 text-emerald-600 focus:ring-emerald-500">
+                  <span class="text-sm font-mono">whereami</span>
+                </label>
+                <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-850 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition">
+                  <input type="radio" name="q1" value="b" class="w-4 h-4 text-emerald-600 focus:ring-emerald-500">
+                  <span class="text-sm font-mono">pwd</span>
+                </label>
+                <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-850 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition">
+                  <input type="radio" name="q1" value="c" class="w-4 h-4 text-emerald-600 focus:ring-emerald-500">
+                  <span class="text-sm font-mono">show -path</span>
+                </label>
+                <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-850 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition">
+                  <input type="radio" name="q1" value="d" class="w-4 h-4 text-emerald-600 focus:ring-emerald-500">
+                  <span class="text-sm font-mono">cd --get</span>
+                </label>
+              </div>
+              <div id="q1-feedback" class="text-xs font-bold pt-1"></div>
+            </div>
+
+            <!-- Question 2 -->
+            <div class="space-y-2 pt-4 border-t border-slate-150 dark:border-slate-800">
+              <h3 class="text-sm font-bold font-mono text-indigo-500 uppercase">Scenario Case 2:</h3>
+              <p class="text-base text-slate-900 dark:text-white font-semibold">
+                An administrator flags a folder named `classified_keys`. Which command takes you directly into that folder level?
+              </p>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2" role="radiogroup" aria-label="Question 2 choices">
+                <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-850 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition">
+                  <input type="radio" name="q2" value="a" class="w-4 h-4 text-emerald-600 focus:ring-emerald-500">
+                  <span class="text-sm font-mono">ls classified_keys</span>
+                </label>
+                <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-850 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition">
+                  <input type="radio" name="q2" value="b" class="w-4 h-4 text-emerald-600 focus:ring-emerald-500">
+                  <span class="text-sm font-mono">cd classified_keys</span>
+                </label>
+                <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-850 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition">
+                  <input type="radio" name="q2" value="c" class="w-4 h-4 text-emerald-600 focus:ring-emerald-500">
+                  <span class="text-sm font-mono">cat classified_keys</span>
+                </label>
+                <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-850 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition">
+                  <input type="radio" name="q2" value="d" class="w-4 h-4 text-emerald-600 focus:ring-emerald-500">
+                  <span class="text-sm font-mono">enter classified_keys</span>
+                </label>
+              </div>
+              <div id="q2-feedback" class="text-xs font-bold pt-1"></div>
+            </div>
+
+            <!-- Question 3 -->
+            <div class="space-y-2 pt-4 border-t border-slate-150 dark:border-slate-800">
+              <h3 class="text-sm font-bold font-mono text-indigo-500 uppercase">Scenario Case 3:</h3>
+              <p class="text-base text-slate-900 dark:text-white font-semibold">
+                You must inspect the current parameters of the secure shell config located exactly at `/etc/ssh/config`. What is the correct execution?
+              </p>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2" role="radiogroup" aria-label="Question 3 choices">
+                <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-850 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition">
+                  <input type="radio" name="q3" value="a" class="w-4 h-4 text-emerald-600 focus:ring-emerald-500">
+                  <span class="text-sm font-mono">cat /etc/ssh/config</span>
+                </label>
+                <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-850 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition">
+                  <input type="radio" name="q3" value="b" class="w-4 h-4 text-emerald-600 focus:ring-emerald-500">
+                  <span class="text-sm font-mono">show /etc/ssh/config</span>
+                </label>
+                <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-850 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition">
+                  <input type="radio" name="q3" value="c" class="w-4 h-4 text-emerald-600 focus:ring-emerald-500">
+                  <span class="text-sm font-mono">run /etc/ssh/config</span>
+                </label>
+                <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-850 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition">
+                  <input type="radio" name="q3" value="d" class="w-4 h-4 text-emerald-600 focus:ring-emerald-500">
+                  <span class="text-sm font-mono">pwd /etc/ssh/config</span>
+                </label>
+              </div>
+              <div id="q3-feedback" class="text-xs font-bold pt-1"></div>
+            </div>
+
+            <!-- Submit Panel -->
+            <div class="pt-6 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-4 flex-wrap">
+              <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-xl font-bold transition flex items-center gap-2 shadow-lg focus:ring-2 focus:ring-amber-500">
+                Submit Answers
+              </button>
+              <div id="quiz-final-score" class="font-mono font-bold text-sm" aria-live="polite"></div>
+            </div>
+
+          </form>
+
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-slate-950 text-slate-400 text-xs py-6 mt-12 border-t border-slate-800" role="contentinfo">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div>
+        <p>© 2026 Community College Cybersecurity Department.</p>
+        <p class="mt-1 text-slate-500">Instructors and ADA designers collaborative build environment.</p>
+      </div>
+      <div class="flex gap-4">
+        <a href="https://www.mprat.org/Terminus/" target="_blank" rel="noopener noreferrer" class="hover:text-emerald-400 transition">Direct MIT Terminus Link</a>
+        <span>|</span>
+        <button onclick="toggleCheatSheetModal(true)" class="hover:text-emerald-400 transition">Keyboard Cheat Sheet</button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============================================== -->
+  <!-- MODAL: TERMINAL CHEAT SHEET -->
+  <!-- ============================================== -->
+  <div id="cheatsheet-modal" class="hidden fixed inset-0 z-50 overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+      
+      <!-- Backdrop -->
+      <div onclick="toggleCheatSheetModal(false)" class="fixed inset-0 transition-opacity bg-slate-955/80" aria-hidden="true"></div>
+
+      <!-- Center helper -->
+      <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+      <!-- Modal Card -->
+      <div class="inline-block align-bottom bg-white dark:bg-slate-900 rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full border border-slate-200 dark:border-slate-850">
+        <div class="bg-slate-950 px-6 py-4 border-b border-slate-850 flex items-center justify-between">
+          <h3 id="modal-title" class="text-lg font-bold text-white font-mono flex items-center gap-2">
+            <span>📋</span> Linux CLI Quick-Reference Guide
+          </h3>
+          <button onclick="toggleCheatSheetModal(false)" class="text-slate-400 hover:text-white text-xl" aria-label="Close Reference Modal">
+            ✕
+          </button>
+        </div>
+
+        <div class="p-6 space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            <!-- Command Block -->
+            <div class="space-y-2">
+              <h4 class="font-bold text-slate-900 dark:text-white text-sm border-b pb-1">Essential Commands</h4>
+              <div class="space-y-1.5 text-xs font-mono">
+                <p><strong class="text-indigo-600 dark:text-indigo-400">pwd</strong> - Print working directory path</p>
+                <p><strong class="text-indigo-600 dark:text-indigo-400">ls</strong> - List all files in folder</p>
+                <p><strong class="text-indigo-600 dark:text-indigo-400">cd [dir]</strong> - Travel to that directory</p>
+                <p><strong class="text-indigo-600 dark:text-indigo-400">cd ..</strong> - Travel backwards/upwards</p>
+                <p><strong class="text-indigo-600 dark:text-indigo-400">cat [file]</strong> - Read entire document text</p>
+                <p><strong class="text-indigo-600 dark:text-indigo-400">clear</strong> - Reset screen logs</p>
+              </div>
+            </div>
+
+            <!-- Help Tips -->
+            <div class="space-y-2">
+              <h4 class="font-bold text-slate-900 dark:text-white text-sm border-b pb-1">Terminus Cheat Sheet</h4>
+              <div class="space-y-1.5 text-xs font-mono">
+                <p><span class="text-amber-500">Spells</span> ➔ Linux Executables</p>
+                <p><span class="text-amber-500">Castle Rooms</span> ➔ Folder Nodes</p>
+                <p><span class="text-amber-500">Chests / Items</span> ➔ Files</p>
+                <p><span class="text-amber-500">less [item]</span> ➔ Standard UNIX reading</p>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="p-3 bg-indigo-50 dark:bg-slate-800 rounded-xl text-xs text-slate-600 dark:text-slate-300">
+            <span class="font-bold">Pro Cyber Tip:</span> Standard Unix terminals remember command histories! Press the UP ARROW key in real environments to instantly auto-populate your previous commands!
+          </div>
+        </div>
+
+        <div class="bg-slate-50 dark:bg-slate-950 px-6 py-4 flex justify-end">
+          <button onclick="toggleCheatSheetModal(false)" class="bg-slate-950 hover:bg-slate-850 text-white font-bold px-4 py-2 rounded-xl text-xs transition">
+            Close Panel
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CORE JAVASCRIPT LOGIC -->
+  <script>
+    // System State
+    const state = {
+      completedTasks: {
+        readTutorial: true, // Marked true by default once loaded
+        studiedFlashcards: false,
+        sandboxFlag: false,
+        terminusCheck: false,
+        quizSuccess: false
+      },
+      currentPath: '~', // Virtual file-system simulation path
+      virtualFS: {
+        '~': {
+          type: 'dir',
+          contents: ['classified', 'system_blueprint.md', 'security_briefing.txt'],
+        },
+        '~/system_blueprint.md': {
+          type: 'file',
+          content: '# MAINFRAME BLUEPRINT\nAlways execute "ls" to reveal current file options in this cyber node!'
+        },
+        '~/security_briefing.txt': {
+          type: 'file',
+          content: 'ALERT BRIEFING: Intruders entered system segments today. Change directory to "classified" instantly and audit the config tokens.'
+        },
+        '~/classified': {
+          type: 'dir',
+          contents: ['secret_key.txt', 'port_scan.conf']
+        },
+        '~/classified/secret_key.txt': {
+          type: 'file',
+          content: '--- AUTHORIZED NODE CADET ACCESS KEY ---\nFLAG{CYBER_CADET_COMMAND_HERO}'
+        },
+        '~/classified/port_scan.conf': {
+          type: 'file',
+          content: 'target_host: 192.168.1.1\nstatus: anomalous_ports_active\nport: 443, 22'
+        }
+      }
+    };
+
+    // Flashcards Data Array
+    const flashcards = [
+      {
+        cmd: 'pwd',
+        desc: 'Print Working Directory',
+        security: 'Verifies the precise operational folder you are inside. Vital to prevent accidental edits or execution of payloads in secure operational root folders.'
+      },
+      {
+        cmd: 'ls',
+        desc: 'List Contents',
+        security: 'Displays all objects in your current node. Crucial for spotting files masquerading with invisible extensions or finding newly hidden directories left by hackers.'
+      },
+      {
+        cmd: 'cd',
+        desc: 'Change Directory',
+        security: 'Moves your focus through file system rooms. In security, changing directory layers helps target configuration structures with speed and localized control.'
+      },
+      {
+        cmd: 'cat',
+        desc: 'Read File',
+        security: 'Instantly reads file text payload without starting an editor. Excellent for parsing network configurations, credentials, or malicious script lines.'
+      },
+      {
+        cmd: 'clear',
+        desc: 'Clear Display Log',
+        security: 'Cleans the terminal output history, stopping critical passcodes or parameters from being visible to nearby spectators.'
+      }
+    ];
+
+    let currentCardIndex = 0;
+    let isCardFlipped = false;
+
+    // Initialize Page
+    window.onload = function() {
+      updateProgressTracker();
+      setupTerminalListeners();
+      loadFlashcard(0);
+
+      // Global Shortcut (Ctrl + /) for cheat sheet
+      document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && e.key === '/') {
+          e.preventDefault();
+          toggleCheatSheetModal(true);
+        }
+      });
+    };
+
+    // Tab Switcher
+    function switchTab(tabId) {
+      const contents = document.querySelectorAll('.tab-content');
+      contents.forEach(el => {
+        el.classList.add('hidden');
+        el.classList.remove('block');
+      });
+
+      const activeTab = document.getElementById(tabId);
+      if (activeTab) {
+        activeTab.classList.remove('hidden');
+        activeTab.classList.add('block');
+      }
+
+      const buttons = document.querySelectorAll('.tab-btn');
+      buttons.forEach(btn => {
+        const isCurrent = btn.id === `btn-${tabId}`;
+        btn.setAttribute('aria-selected', isCurrent ? 'true' : 'false');
+        if (isCurrent) {
+          btn.classList.add('bg-emerald-50', 'dark:bg-emerald-950/40', 'text-emerald-600', 'dark:text-emerald-400', 'border-l-4', 'border-emerald-500');
+          btn.classList.remove('text-slate-600', 'hover:bg-slate-100', 'dark:text-slate-400', 'dark:hover:bg-slate-800');
+        } else {
+          btn.classList.remove('bg-emerald-50', 'dark:bg-emerald-950/40', 'text-emerald-600', 'dark:text-emerald-400', 'border-l-4', 'border-emerald-500');
+          btn.classList.add('text-slate-600', 'hover:bg-slate-100', 'dark:text-slate-400', 'dark:hover:bg-slate-800');
+        }
+      });
+
+      if (tabId === 'tab-sandbox') {
+        setTimeout(() => {
+          document.getElementById('terminal-input').focus();
+        }, 150);
+      }
+    }
+
+    // Progress calculations
+    function updateProgressTracker() {
+      const tasks = Object.keys(state.completedTasks);
+      const total = tasks.length;
+      const completed = tasks.filter(t => state.completedTasks[t] === true).length;
+      
+      document.getElementById('tracker-completed').innerText = `${completed}/${total}`;
+      const percentage = (completed / total) * 100;
+      
+      const bar = document.getElementById('progress-bar-fill');
+      bar.style.width = `${percentage}%`;
+      bar.setAttribute('aria-valuenow', percentage);
+    }
+
+    // Toggle Modal
+    function toggleCheatSheetModal(show) {
+      const modal = document.getElementById('cheatsheet-modal');
+      if (show) {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      } else {
+        modal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+      }
+    }
+
+    // Reload MIT Game Iframe Safely
+    function reloadTerminusIframe() {
+      const frame = document.getElementById('terminus-iframe');
+      frame.src = frame.src;
+    }
+
+    // Accessibility Font Controls
+    let textLevel = 0;
+    function adjustTextSize(dir) {
+      const body = document.body;
+      if (dir === 'up' && textLevel < 3) {
+        textLevel++;
+      } else if (dir === 'down' && textLevel > -2) {
+        textLevel--;
+      }
+      
+      body.classList.remove('text-xs', 'text-sm', 'text-base', 'text-lg', 'text-xl');
+      if (textLevel === -2) body.classList.add('text-xs');
+      if (textLevel === -1) body.classList.add('text-sm');
+      if (textLevel === 0) body.classList.add('text-base');
+      if (textLevel === 1) body.classList.add('text-lg');
+      if (textLevel === 2) body.classList.add('text-xl');
+    }
+
+    function toggleHighContrast() {
+      document.body.classList.toggle('dark');
+      const contrastBtn = document.getElementById('btn-contrast');
+      if (document.body.classList.contains('dark')) {
+        contrastBtn.classList.add('bg-amber-600', 'text-slate-950');
+      } else {
+        contrastBtn.classList.remove('bg-amber-600', 'text-slate-950');
+      }
+    }
+
+    function toggleDyslexiaFont() {
+      document.body.classList.toggle('dyslexic-font');
+      const btn = document.getElementById('btn-dyslexia');
+      if (document.body.classList.contains('dyslexic-font')) {
+        btn.classList.add('bg-sky-600', 'text-white');
+      } else {
+        btn.classList.remove('bg-sky-600', 'text-white');
+      }
+    }
+
+    // =========================================================================
+    // FLASHCARD HANDLERS
+    // =========================================================================
+    function loadFlashcard(index) {
+      isCardFlipped = false;
+      document.getElementById('flashcard-inner').classList.remove('rotate-y-180');
+      
+      const card = flashcards[index];
+      document.getElementById('card-cmd').innerText = card.cmd;
+      document.getElementById('card-desc').innerText = card.desc;
+      document.getElementById('card-security-use').innerText = card.security;
+      
+      const totalText = `${index + 1} of ${flashcards.length}`;
+      document.getElementById('card-index-front').innerText = totalText;
+      document.getElementById('card-index-back').innerText = totalText;
+    }
+
+    function toggleFlashcardFlip() {
+      isCardFlipped = !isCardFlipped;
+      const inner = document.getElementById('flashcard-inner');
+      if (isCardFlipped) {
+        inner.classList.add('rotate-y-180');
+      } else {
+        inner.classList.remove('rotate-y-180');
+      }
+    }
+
+    function handleFlashcardKey(event) {
+      if (event.key === ' ' || event.key === 'Enter') {
+        event.preventDefault();
+        toggleFlashcardFlip();
+      } else if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        nextFlashcard();
+      } else if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        prevFlashcard();
+      }
+    }
+
+    function nextFlashcard() {
+      currentCardIndex = (currentCardIndex + 1) % flashcards.length;
+      loadFlashcard(currentCardIndex);
+    }
+
+    document.getElementById('flashcard-container').addEventListener('keydown', function(e) {
+      if (['Space', ' ', 'ArrowLeft', 'ArrowRight', 'Enter'].includes(e.key)) {
+        e.preventDefault();
+      }
+    });
+
+    function prevFlashcard() {
+      currentCardIndex = (currentCardIndex - 1 + flashcards.length) % flashcards.length;
+      loadFlashcard(currentCardIndex);
+    }
+
+    function markCardsFinished() {
+      state.completedTasks.studiedFlashcards = true;
+      updateProgressTracker();
+      alert("Excellent! Flashcards registered. Proceed to simulated sandbox practice.");
+    }
+
+    // =========================================================================
+    // TERMINAL SIMULATOR ENGINE (Virtual System Parser)
+    // =========================================================================
+    function setupTerminalListeners() {
+      const termInput = document.getElementById('terminal-input');
+      termInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          const commandLine = termInput.value.trim();
+          if (commandLine) {
+            handleTerminalCommand(commandLine);
+          }
+          termInput.value = '';
+        }
+      });
+    }
+
+    function insertAndRunCommand(cmd) {
+      document.getElementById('terminal-input').value = cmd;
+      handleTerminalCommand(cmd);
+      document.getElementById('terminal-input').value = '';
+    }
+
+    function resetSandboxTerminal() {
+      state.currentPath = '~';
+      const screen = document.getElementById('terminal-screen');
+      screen.innerHTML = `
+        <div class="text-slate-400">Environment restored. Systems initialized to factory parameters.</div>
+        <div class="text-slate-400">Type <span class="text-amber-300 font-bold">ls</span> to see folder blueprints.</div>
+        <div class="text-slate-500">---------------------------------------------------------</div>
+      `;
+      document.getElementById('terminal-prompt-path').innerText = '~';
+    }
+
+    function handleTerminalCommand(fullCommand) {
+      const screen = document.getElementById('terminal-screen');
+      const outputLine = document.createElement('div');
+      outputLine.className = 'mt-1';
+      
+      const echoText = document.createElement('div');
+      echoText.className = 'text-slate-300 font-bold mt-2';
+      echoText.innerText = `cadet@cyber-node:${state.currentPath}$ ${fullCommand}`;
+      screen.appendChild(echoText);
+
+      const parts = fullCommand.split(/\s+/);
+      const baseCmd = parts[0].toLowerCase();
+      const args = parts.slice(1);
+
+      let resultHtml = '';
+
+      switch(baseCmd) {
+        case 'help':
+          resultHtml = `
+            <div class="text-amber-400 font-bold">Mainframe Command Index:</div>
+            <div class="grid grid-cols-2 gap-1 text-xs mt-1">
+              <div><strong class="text-indigo-400">ls</strong> - View node files/folders</div>
+              <div><strong class="text-indigo-400">pwd</strong> - Print exact directory layout</div>
+              <div><strong class="text-indigo-400">cd [target]</strong> - Move path location</div>
+              <div><strong class="text-indigo-400">cat [file]</strong> - Read raw text files</div>
+              <div><strong class="text-indigo-400">clear</strong> - Reset logs</div>
+              <div><strong class="text-indigo-400">whoami</strong> - Report current user badge</div>
+            </div>
+          `;
+          break;
+
+        case 'clear':
+          screen.innerHTML = '';
+          return;
+
+        case 'whoami':
+          resultHtml = `<div class="text-slate-350">cadet (Intro to Unix Student User ID #104)</div>`;
+          break;
+
+        case 'pwd':
+          resultHtml = `<div class="text-emerald-400">${state.currentPath === '~' ? '/home/cadet' : '/home/cadet/classified'}</div>`;
+          break;
+
+        case 'ls':
+          const currentDirectoryObject = state.virtualFS[state.currentPath];
+          if (currentDirectoryObject && currentDirectoryObject.type === 'dir') {
+            const listItems = currentDirectoryObject.contents.map(item => {
+              const fullItemPath = state.currentPath === '~' ? `~/${item}` : `${state.currentPath}/${item}`;
+              const itemObj = state.virtualFS[fullItemPath];
+              if (itemObj && itemObj.type === 'dir') {
+                return `<span class="text-sky-400 font-bold">${item}/</span>`;
+              }
+              return `<span class="text-white">${item}</span>`;
+            });
+            resultHtml = `<div class="flex flex-wrap gap-4">${listItems.join('')}</div>`;
+          } else {
+            resultHtml = `<div class="text-red-500">Critical Error: Node directory access fault.</div>`;
+          }
+          break;
+
+        case 'cd':
+          const targetDir = args[0];
+          if (!targetDir || targetDir === '~') {
+            state.currentPath = '~';
+            document.getElementById('terminal-prompt-path').innerText = '~';
+            resultHtml = `<div class="text-slate-400 font-mono">Returned to home node.</div>`;
+          } else if (targetDir === '..') {
+            if (state.currentPath === '~/classified') {
+              state.currentPath = '~';
+              document.getElementById('terminal-prompt-path').innerText = '~';
+              resultHtml = `<div class="text-slate-400 font-mono">Moved back up to ~</div>`;
+            } else {
+              resultHtml = `<div class="text-slate-400 font-mono">At root boundary of laboratory.</div>`;
+            }
+          } else if (targetDir === 'classified' && state.currentPath === '~') {
+            state.currentPath = '~/classified';
+            document.getElementById('terminal-prompt-path').innerText = '~/classified';
+            resultHtml = `<div class="text-slate-400 font-mono">Entered directory 'classified'.</div>`;
+          } else {
+            resultHtml = `<div class="text-red-500">bash: cd: ${targetDir}: Directory path is either offline or locked.</div>`;
+          }
+          break;
+
+        case 'cat':
+          const targetFile = args[0];
+          if (!targetFile) {
+            resultHtml = `<div class="text-red-500">Command usage: cat &lt;filename&gt;</div>`;
+          } else {
+            let resolvedPath = '';
+            if (targetFile.startsWith('classified/')) {
+              resolvedPath = `~/classified/${targetFile.replace('classified/', '')}`;
+            } else if (state.currentPath === '~/classified') {
+              resolvedPath = `~/classified/${targetFile}`;
+            } else {
+              resolvedPath = `~/${targetFile}`;
+            }
+
+            const fileObj = state.virtualFS[resolvedPath];
+            if (fileObj && fileObj.type === 'file') {
+              resultHtml = `<div class="bg-slate-900 p-2.5 border border-slate-800 rounded text-emerald-300 font-mono whitespace-pre-line">${fileObj.content}</div>`;
+            } else {
+              resultHtml = `<div class="text-red-500">cat: ${targetFile}: Cannot find matching document target. Double check spelled name and extension!</div>`;
+            }
+          }
+          break;
+
+        default:
+          resultHtml = `<div class="text-red-500">bash: executable not found: ${baseCmd}. Input "help" to list the UNIX instruction library.</div>`;
+          break;
+      }
+
+      outputLine.innerHTML = resultHtml;
+      screen.appendChild(outputLine);
+      screen.scrollTop = screen.scrollHeight;
+    }
+
+    // Submit Sandbox Verification Code
+    function submitSandboxFlag() {
+      const val = document.getElementById('flag-submit-input').value.trim();
+      const feedback = document.getElementById('flag-feedback');
+      if (val === 'FLAG{CYBER_CADET_COMMAND_HERO}') {
+        feedback.innerHTML = `<span class="text-emerald-500">✓ Excellent job! Secure node configuration parsed and flag confirmed.</span>`;
+        state.completedTasks.sandboxFlag = true;
+        updateProgressTracker();
+      } else {
+        feedback.innerHTML = `<span class="text-red-500">✗ Code is not validated. Check secret_key.txt contents again. Hint: cd classified -> cat secret_key.txt</span>`;
+      }
+    }
+
+    // Check Terminus Challenge Answer
+    function checkGameChallenge() {
+      const val = document.getElementById('game-check-input').value.trim().toLowerCase();
+      const feedback = document.getElementById('game-feedback-msg');
+      if (val === 'cat' || val === 'less') {
+        feedback.innerHTML = `<span class="text-emerald-500">✓ Spot on! "less" reads items page-by-page in Terminus, while "cat" concatenates them into stdout. Both are UNIX equivalents.</span>`;
+        state.completedTasks.terminusCheck = true;
+        updateProgressTracker();
+      } else {
+        feedback.innerHTML = `<span class="text-amber-500">⚠️ Try again! What starts with 'c' and ends with 't' to dump text configurations on standard systems?</span>`;
+      }
+    }
+
+    // Cybersecurity Readiness Quiz Evaluator
+    function evaluateQuiz(e) {
+      e.preventDefault();
+      
+      const q1 = document.querySelector('input[name="q1"]:checked')?.value;
+      const q2 = document.querySelector('input[name="q2"]:checked')?.value;
+      const q3 = document.querySelector('input[name="q3"]:checked')?.value;
+
+      if (!q1 || !q2 || !q3) {
+        document.getElementById('quiz-final-score').innerHTML = `<span class="text-red-500">Answer all scenarios before submitting.</span>`;
+        return;
+      }
+
+      let score = 0;
+      
+      // Q1 Check
+      if (q1 === 'b') {
+        score++;
+        document.getElementById('q1-feedback').innerHTML = `<span class="text-emerald-500">✓ Correct! "pwd" is the shortcut command for Print Working Directory.</span>`;
+      } else {
+        document.getElementById('q1-feedback').innerHTML = `<span class="text-red-500">✗ Incorrect. pwd prints the target paths.</span>`;
+      }
+
+      // Q2 Check
+      if (q2 === 'b') {
+        score++;
+        document.getElementById('q2-feedback').innerHTML = `<span class="text-emerald-500">✓ Correct! "cd classified_keys" enters the folder context immediately.</span>`;
+      } else {
+        document.getElementById('q2-feedback').innerHTML = `<span class="text-red-500">✗ Incorrect. Use "cd" (change directory) to navigate.</span>`;
+      }
+
+      // Q3 Check
+      if (q3 === 'a') {
+        score++;
+        document.getElementById('q3-feedback').innerHTML = `<span class="text-emerald-500">✓ Correct! Running "cat" with the absolute file path outputs config parameters.</span>`;
+      } else {
+        document.getElementById('q3-feedback').innerHTML = `<span class="text-red-500">✗ Incorrect. Use "cat [filepath]" to inspect raw script arrays.</span>`;
+      }
+
+      const scorePercent = Math.round((score / 3) * 100);
+      const scoreOutput = document.getElementById('quiz-final-score');
+      
+      if (score === 3) {
+        scoreOutput.innerHTML = `<span class="text-emerald-500">🛡️ Perfect Score! Operational Access Approved (100%). Progression badge updated!</span>`;
+        state.completedTasks.quizSuccess = true;
+        updateProgressTracker();
+      } else {
+        scoreOutput.innerHTML = `<span class="text-amber-500">Operational Clearance Denied (${scorePercent}%). Review your command deck and re-submit!</span>`;
+      }
+    }
+  </script>
+</body>
+</html>
